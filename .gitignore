@@ -1,0 +1,12 @@
+# Build directory
+dist/
+
+# NodeJS Install
+node_modules/
+
+# macOS
+.DS_Store
+._*
+
+# Windows
+desktop.ini
