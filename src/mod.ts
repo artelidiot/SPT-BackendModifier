@@ -18,13 +18,16 @@ class Mod implements IPostDBLoadMod {
         // get the logger from the server container
         const logger = container.resolve<ILogger>("WinstonLogger")
 
-        // Set the walking overweight limit to match the obese limit, plus one
-        tables.globals.config.Stamina.WalkOverweightLimits.x = tables.globals.config.Stamina.WalkOverweightLimits.y + 1
-        logger.info("Adjusted walking overweight limit")
+        // Set the walking overweight limit to match the obese limit
+        // The 'x' value cannot be set to a value greater than the 'y' value, otherwise you will lose stamina while walking even while underweight (EFT bug/quirk?)
+        tables.globals.config.Stamina.WalkOverweightLimits.x = tables.globals.config.Stamina.WalkOverweightLimits.y
+        logger.debug("[database-modifier] set walkOverweightLimit.x to: " + tables.globals.config.Stamina.WalkOverweightLimits.x)
+        logger.info("[DatabaseModifier] Adjusted walking overweight limit")
 
         // Set the aim drain rate to match that of the range finder's
         tables.globals.config.Stamina.AimDrainRate = tables.globals.config.Stamina.AimRangeFinderDrainRate
-        logger.info("Adjusted aiming stamina drain rate")
+        logger.debug("[database-modifier] set aimDrainRate to: " + tables.globals.config.Stamina.AimDrainRate)
+        logger.info("[DatabaseModifier] Adjusted aiming stamina drain rate")
 
         // Iterate over all bot types
         for (const botType in tables.bots.types) {
@@ -40,18 +43,18 @@ class Mod implements IPostDBLoadMod {
                 if (botSoundSkill.min >= 5100) {
                     // Set the minimum skill progress to 3000
                     botSoundSkill.min = 3000
-                    logger.debug("set minimum BotSound skill progress to: " + 3000 + " for botType: " + botType)
+                    logger.debug("[database-modifier] set minimum BotSound skill progress to: " + 3000 + " for botType: " + botType)
                 }
 
                 // Check if the maximum skill progress is elite level (5100)
                 if (botSoundSkill.max >= 5100) {
                     // Set the maximum skill progress to 3000
                     botSoundSkill.max = 5100
-                    logger.debug("set maximum BotSound skill progress to: " + 3000 + " for botType: " + botType)
+                    logger.debug("[database-modifier] set maximum BotSound skill progress to: " + 3000 + " for botType: " + botType)
                 }
             }
         }
-        logger.info("Adjusted bot skills")
+        logger.info("[DatabaseModifier] Adjusted bot skills")
 
         // Iterate over every hideout area
         tables.hideout.areas.forEach(area => {
@@ -65,10 +68,10 @@ class Mod implements IPostDBLoadMod {
 
                 // Divide the construction time by 7
                 area.stages[stage].constructionTime = area.stages[stage].constructionTime / 7
-                logger.debug("set constructionTime to: " + area.stages[stage].constructionTime + " in stage: " + stage + " for area: " + area._id)
+                logger.debug("[database-modifier] set constructionTime to: " + area.stages[stage].constructionTime + " in stage: " + stage + " for area: " + area._id)
             }
         })
-        logger.info("Adjusted hideout area construction times")
+        logger.info("[DatabaseModifier] Adjusted hideout area construction times")
     }
 }
 
