@@ -1,5 +1,10 @@
+# Visual Studio
+.vscode/
+
 # Build directory
 dist/
+# Test directory
+test/
 
 # NodeJS Install
 node_modules/

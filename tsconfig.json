@@ -14,5 +14,5 @@
             "@spt/*": ["./types/*"],
         },
     },
-    "exclude": ["node_modules", "dist", "tmp"],
+    "exclude": ["node_modules", "dist", "tmp", "test"],
 }

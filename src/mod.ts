@@ -1,5 +1,6 @@
 import { DependencyContainer } from "tsyringe";
 
+import { BaseClasses } from "@spt/models/enums/BaseClasses";
 import { ConfigServer } from "@spt/servers/ConfigServer";
 import { ConfigTypes } from "@spt/models/enums/ConfigTypes";
 import { DatabaseServer } from "@spt/servers/DatabaseServer";
@@ -7,18 +8,19 @@ import { ICoreConfig } from "@spt/models/spt/config/ICoreConfig";
 import { IDatabaseTables } from "@spt/models/spt/server/IDatabaseTables";
 import { ILogger } from "@spt/models/spt/utils/ILogger";
 import { IPostDBLoadMod } from "@spt/models/external/IPostDBLoadMod";
-import { SkillTypes } from "@spt/models/enums/SkillTypes";
 import { IPreSptLoadMod } from "@spt/models/external/IPreSptLoadMod";
+import { ItemHelper } from "@spt/helpers/ItemHelper";
+import { SkillTypes } from "@spt/models/enums/SkillTypes";
 
 class Mod implements IPreSptLoadMod, IPostDBLoadMod {
 
     public preSptLoad(container: DependencyContainer): void {
-        // Get the server container's logger
+        // Get the server's logger
         const logger = container.resolve<ILogger>("WinstonLogger")
 
-        // Get the configuration files from the server
+        // Get the server's configuration files
         const configServer = container.resolve<ConfigServer>("ConfigServer")
-        // Obtain the SPT_Data\Server\configs\core.json configuration file from the server
+        // Get the server's SPT_Data\Server\configs\core.json configuration file
         const coreConfig: ICoreConfig = configServer.getConfig<ICoreConfig>(ConfigTypes.CORE)
 
         // Disable the Commando chat bot
@@ -37,10 +39,10 @@ class Mod implements IPreSptLoadMod, IPostDBLoadMod {
     }
 
     public postDBLoad(container: DependencyContainer): void {
-        // Get the server container's logger
+        // Get the server's logger
         const logger = container.resolve<ILogger>("WinstonLogger")
 
-        // Get the database from the server
+        // Get the server's database
         const databaseServer = container.resolve<DatabaseServer>("DatabaseServer")
         // Get all the in-memory json found in /assets/database
         const database: IDatabaseTables = databaseServer.getTables()
@@ -101,6 +103,20 @@ class Mod implements IPreSptLoadMod, IPostDBLoadMod {
             }
         })
         logger.info("[BackendModifier] Adjusted hideout area construction times")
+
+        // Load the ItemHelper utility
+        const itemHelper: ItemHelper = container.resolve<ItemHelper>("ItemHelper")
+        // Obtain all items from the database as an array (rather than a keyed pair)
+        const items = Object.values(database.templates.items)
+
+        // Create an array of all iron sights in the game
+        const ironSights = items.filter(item => itemHelper.isOfBaseclass(item._id, BaseClasses.IRON_SIGHT))
+        // Iterate over each iron sight and set its ergonomics value to +1
+        for (const ironSight of ironSights) {
+            ironSight._props.Ergonomics = 1
+            logger.debug("[backend-modifier] set ergonomics of item: " + ironSight._id + " to: " + ironSight._props.Ergonomics)
+        }
+        logger.info("[BackendModifier] Adjusted items")
     }
 }
 
