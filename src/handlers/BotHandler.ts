@@ -5,27 +5,20 @@ import { ILogger } from "@spt/models/spt/utils/ILogger";
 export class BotHandler {
 
     public handle(logger: ILogger, database: IDatabaseTables): void {
-        // Iterate over all bot types
-        for (const botType in database.bots.types) {
-            // Iterate over any skills present
-            for (const commonSkill in database.bots.types[botType].skills.Common) {
-                // Make sure the skill type is BotSound
-                if (commonSkill !== SkillTypes.BOT_SOUND) continue
 
-                // Check if the minimum skill progress is elite level (5100)
-                if (database.bots.types[botType].skills.Common[commonSkill].min >= 5100) {
-                    // Set the minimum skill progress to 3000
-                    database.bots.types[botType].skills.Common[commonSkill].min = 3000
+        // Iterate over all bots and their associated data
+        for (const [botType, botData] of Object.entries(database.bots.types)) {
+            // Iterate over each bots skills
+            for (const [commonSkill, skillData] of Object.entries(botData.skills.Common)) {
+                // We're only interested in the BotSound skill
+                if (commonSkill === SkillTypes.BOT_SOUND) {
+                    // Create a function that adjusts elite values (5100) to 3000 without modifying non-elite values
+                    const updateSkill = (value: number) => (value >= 5100 ? 3000 : value)
+                    // Apply the function to the min and max values
+                    skillData.min = updateSkill(skillData.min)
+                    skillData.max = updateSkill(skillData.max)
 
-                    logger.debug("[backend-modifier] set minimum BotSound skill progress to: " + database.bots.types[botType].skills.Common[commonSkill].min + " for botType: " + botType)
-                }
-
-                // Check if the maximum skill progress is elite level (5100)
-                if (database.bots.types[botType].skills.Common[commonSkill].max >= 5100) {
-                    // Set the maximum skill progress to 3000
-                    database.bots.types[botType].skills.Common[commonSkill].max = 3000
-
-                    logger.debug("[backend-modifier] set maximum BotSound skill progress to: " + database.bots.types[botType].skills.Common[commonSkill].max + " for botType: " + botType)
+                    logger.debug(`[backend-modifier] set progress for skill: '${commonSkill}' to '${skillData.min}', '${skillData.max}' for bot: '${botType}'`)
                 }
             }
         }

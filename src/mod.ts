@@ -1,15 +1,15 @@
-import { IPostDBLoadMod } from "@spt/models/external/IPostDBLoadMod"
-import { IPreSptLoadMod } from "@spt/models/external/IPreSptLoadMod"
-import { IDatabaseTables } from "@spt/models/spt/server/IDatabaseTables"
-import { ILogger } from "@spt/models/spt/utils/ILogger"
-import { ConfigServer } from "@spt/servers/ConfigServer"
-import { DatabaseServer } from "@spt/servers/DatabaseServer"
-import { DependencyContainer } from "tsyringe"
-import { BotHandler } from "./handlers/BotHandler"
-import { ConfigHandler } from "./handlers/ConfigHandler"
-import { GlobalHandler } from "./handlers/GlobalHandler"
-import { HideoutHandler } from "./handlers/HideoutHandler"
-import { ItemHandler } from "./handlers/ItemHandler"
+import { IPostDBLoadMod } from "@spt/models/external/IPostDBLoadMod";
+import { IPreSptLoadMod } from "@spt/models/external/IPreSptLoadMod";
+import { IDatabaseTables } from "@spt/models/spt/server/IDatabaseTables";
+import { ILogger } from "@spt/models/spt/utils/ILogger";
+import { ConfigServer } from "@spt/servers/ConfigServer";
+import { DatabaseServer } from "@spt/servers/DatabaseServer";
+import { DependencyContainer } from "tsyringe";
+import { BotHandler } from "./handlers/BotHandler";
+import { ConfigHandler } from "./handlers/ConfigHandler";
+import { GlobalHandler } from "./handlers/GlobalHandler";
+import { HideoutHandler } from "./handlers/HideoutHandler";
+import { ItemHandler } from "./handlers/ItemHandler";
 
 class Mod implements IPreSptLoadMod, IPostDBLoadMod {
 
