@@ -7,7 +7,7 @@ import { DatabaseServer } from "@spt/servers/DatabaseServer";
 import { DependencyContainer } from "tsyringe";
 import { BotHandler } from "./handlers/BotHandler";
 import { ConfigHandler } from "./handlers/ConfigHandler";
-import { GlobalHandler } from "./handlers/GlobalHandler";
+import { GlobalHandler } from "./handlers/DatabaseHandler";
 import { HideoutHandler } from "./handlers/HideoutHandler";
 import { ItemHandler } from "./handlers/ItemHandler";
 
