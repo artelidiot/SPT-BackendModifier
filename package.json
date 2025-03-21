@@ -1,20 +1,15 @@
 {
-    "name": "backend-modifier",
-    "version": "1.0.0",
-    "sptVersion": "~3.10",
-    "license": "MIT",
-    "main": "src/mod.js",
     "author": "Artel",
     "contributors": [],
-    "loadBefore": [],
-    "loadAfter": [],
     "incompatibilities": [],
     "isBundleMod": false,
-    "scripts": {
-        "setup": "npm i",
-        "build": "node ./build.mjs",
-        "buildinfo": "node ./build.mjs --verbose"
-    },
+    "license": "MIT",
+    "loadAfter": [],
+    "loadBefore": [],
+    "main": "src/mod.js",
+    "name": "backend-modifier",
+    "sptVersion": "~3.11",
+    "version": "1.1.0",
     "devDependencies": {
         "@types/node": "20.11",
         "@typescript-eslint/eslint-plugin": "7.2",
@@ -24,7 +19,12 @@
         "fs-extra": "11.2",
         "ignore": "^5.2",
         "tsyringe": "4.8.0",
-        "typescript": "5.4",
+        "typescript": "5.8",
         "winston": "3.12"
+    },
+    "scripts": {
+        "setup": "npm i",
+        "build": "node ./build.mjs",
+        "buildinfo": "node ./build.mjs --verbose"
     }
 }

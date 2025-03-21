@@ -5,9 +5,11 @@ export class GlobalHandler {
 
     public handle(logger: ILogger, database: IDatabaseTables): void {
         // Set the flea market to found-in-raid only
+        /*
         database.globals.config.RagFair.isOnlyFoundInRaidAllowed = true
         logger.debug(`[backend-modifier] set 'RagFair.isOnlyFoundInRaidAllowed' to: ${database.globals.config.RagFair.isOnlyFoundInRaidAllowed}`)
         logger.info("[BackendModifier] Set flea market to found-in-raid only")
+        */
 
         // Set the weapon stamina drain rate to match the range finder's stamina drain rate
         database.globals.config.Stamina.AimDrainRate = database.globals.config.Stamina.AimRangeFinderDrainRate

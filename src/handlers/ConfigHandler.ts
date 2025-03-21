@@ -12,16 +12,22 @@ export class ConfigHandler {
         // Get the server's SPT_Data\Server\configs\ragfair.json configuration file
         const fleaConfig: IRagfairConfig = configServer.getConfig<IRagfairConfig>(ConfigTypes.RAGFAIR)
 
-        // Disable the Commando chat bot
-        coreConfig.features.chatbotFeatures.commandoEnabled = false
-        logger.debug(`[backend-modifier] set 'commandoEnabled' to: ${coreConfig.features.chatbotFeatures.commandoEnabled}`)
+        // Disable the Commando chat bot's give command
         coreConfig.features.chatbotFeatures.commandoFeatures.giveCommandEnabled = false
         logger.debug(`[backend-modifier] set 'commandoFeatures.giveCommandEnabled' to: ${coreConfig.features.chatbotFeatures.commandoFeatures.giveCommandEnabled}`)
-        // Disable the SPT chat bot
-        coreConfig.features.chatbotFeatures.sptFriendEnabled = false
-        logger.debug(`[backend-modifier] set 'sptFriendEnabled' to: ${coreConfig.features.chatbotFeatures.sptFriendEnabled}`)
+        // Disable the SPT chat bot's gifts
         coreConfig.features.chatbotFeatures.sptFriendGiftsEnabled = false
         logger.debug(`[backend-modifier] set 'sptFriendGiftsEnabled' to: ${coreConfig.features.chatbotFeatures.sptFriendGiftsEnabled}`)
+
+        // Iterate over the chat bot definitions
+        for (const [label, id] of Object.entries(coreConfig.features.chatbotFeatures.ids)) {
+            // Make sure the chat bot is the one we want
+            if (label === "spt" || label === "commando") {
+                // Set its enabled status to false
+                coreConfig.features.chatbotFeatures.enabledBots[id] = false
+                logger.debug(`[backend-modifier] disabled chat bot: '${label}'`)
+            }
+        }
 
         logger.info("[BackendModifier] Disabled the SPT and Commando chat bots")
 

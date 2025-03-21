@@ -34,29 +34,6 @@ export class ItemHandler {
 
         // Iterate over every item present in the database
         for (const item of items) {
-            // Check if the item is an iron sight
-            if (itemHelper.isOfBaseclass(item._id, BaseClasses.IRON_SIGHT)) {
-                // Normalize the ergonomics for each iron sight to +1
-                item._props.Ergonomics = 1
-
-                logger.debug(`[backend-modifier] set 'Ergonomics' of item: '${item._name}' to: '${item._props.Ergonomics}'`)
-            }
-
-            // Check if the item is a currency
-            if (itemHelper.isOfBaseclasses(item._id, [BaseClasses.MONEY])) {
-                // TODO: Figure out a way to access items via. enum constant or equivalent
-                // Set the maximum stack size for roubles to 1 million
-                if (item._props.ShortName === "Roubles") {
-                    item._props.StackMaxSize = 1000000
-                    logger.debug(`[backend-modifier] set 'StackMaxSize' of item: '${item._props.ShortName}' to: '${item._props.StackMaxSize}'`)
-                }
-                // Set the maximum stack size for GP coins to 100
-                if (item._props.ShortName === "item_barter_valuable_gp") {
-                    item._props.StackMaxSize = 100
-                    logger.debug(`[backend-modifier] set 'StackMaxSize' of item: '${item._props.ShortName}' to: '${item._props.StackMaxSize}'`)
-                }
-            }
-
             // Check if the item is headwear
             if (itemHelper.isOfBaseclass(item._id, BaseClasses.HEADWEAR)) {
                 // Make sure the headwear doesn't have armor slots and has conflicting items
@@ -73,6 +50,14 @@ export class ItemHandler {
                     // Remove conflicting headwear (that has no armor slots) from the earpiece
                     removeConflictingItems(item, BaseClasses.HEADWEAR, headwear => headwear._props.Slots.length === 0)
                 }
+            }
+
+            // Check if the item is an iron sight
+            if (itemHelper.isOfBaseclass(item._id, BaseClasses.IRON_SIGHT)) {
+                // Normalize the ergonomics for each iron sight to +1
+                item._props.Ergonomics = 1
+
+                logger.debug(`[backend-modifier] set 'Ergonomics' of item: '${item._name}' to: '${item._props.Ergonomics}'`)
             }
         }
 
