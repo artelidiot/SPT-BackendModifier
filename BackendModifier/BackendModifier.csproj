@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <RootNamespace>BackendModifier</RootNamespace>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+
+        <OutputType>Library</OutputType>
+        <OutputPath>bin\$(Configuration)\$(ProjectName)\$(AssemblyName)</OutputPath>
+
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+        <GenerateDocumentationFile>false</GenerateDocumentationFile>
+        <GenerateRuntimeConfigurationFiles>false</GenerateRuntimeConfigurationFiles>
+        <GenerateSatelliteAssemblies>false</GenerateSatelliteAssemblies>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="SPTarkov.Common" Version="4.0.11" />
+        <PackageReference Include="SPTarkov.DI" Version="4.0.11" />
+        <PackageReference Include="SPTarkov.Server.Core" Version="4.0.11" />
+    </ItemGroup>
+
+    <Target Name="CleanUnwantedFiles" AfterTargets="Build">
+        <ItemGroup>
+            <UnwantedFiles Include="$(OutputPath)**\*.pdb" />
+            <UnwantedFiles Include="$(OutputPath)**\*.deps.json" />
+            <UnwantedFiles Include="$(OutputPath)**\*.endpoints.json" />
+        </ItemGroup>
+
+        <Delete Files="@(UnwantedFiles)" />
+    </Target>
+
+</Project>

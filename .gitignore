@@ -1,17 +1,19 @@
 # Visual Studio
 .vscode/
 
-# Build directory
-dist/
-# Test directory
-test/
-
-# NodeJS Install
-node_modules/
+# Build output
+bin/
+# Build intermediates
+obj/
 
 # macOS
 .DS_Store
 ._*
 
 # Windows
-desktop.ini
+[Dd]esktop.ini
+Thumbs.db
+
+# Linux
+.Trash-*/
+.directory
