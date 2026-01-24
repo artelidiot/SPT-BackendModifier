@@ -1,6 +1,7 @@
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Helpers;
+using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Enums;
 using SPTarkov.Server.Core.Models.Spt.Config;
 using SPTarkov.Server.Core.Models.Spt.Mod;
@@ -88,7 +89,7 @@ public class DatabaseModifier(DatabaseService databaseService, ItemHelper itemHe
         const int MaxSkillProgress = 3000;
 
         // Iterate over the bot types
-        foreach ((_, var botType) in bots.Types)
+        foreach (var (_, botType) in bots.Types)
         {
             // Skip this bot if the type is null
             if (botType == null)
@@ -129,7 +130,7 @@ public class DatabaseModifier(DatabaseService databaseService, ItemHelper itemHe
         foreach (var area in hideout.Areas)
         {
             // Iterate over the stages (upgrades) for said area
-            foreach ((_, var stage) in area.Stages ?? [])
+            foreach (var (_, stage) in area.Stages ?? [])
             {
                 // We don't need to do anything if the construction time is already instantaneous
                 if (stage.ConstructionTime == 0)
@@ -147,8 +148,42 @@ public class DatabaseModifier(DatabaseService databaseService, ItemHelper itemHe
     {
         var items = databaseService.GetItems();
 
+        bool ItemHasSlots(MongoId id)
+        {
+            // Get the item from the database and check if it has any slots
+            if (items.TryGetValue(id, out var item))
+            {
+                return item.Properties?.Slots?.Any() == true;
+            }
+
+            return false;
+        }
+
+        bool ShouldRemoveConflict(MongoId conflictingItemID, MongoId conflictingBaseClass, bool cosmeticOnly)
+        {
+            // The item isn't in the database, assume it's a modded item that hasn't been loaded yet and don't touch it
+            if (!items.TryGetValue(conflictingItemID, out var template))
+            {
+                return false;
+            }
+
+            // Make sure the item matches the specified base class
+            if (!itemHelper.IsOfBaseclass(conflictingItemID, conflictingBaseClass))
+            {
+                return false;
+            }
+
+            // Make sure the item has no slots if we're checking for cosmetics only
+            if (cosmeticOnly)
+            {
+                return template.Properties?.Slots?.Any() != true;
+            }
+
+            return true;
+        }
+
         // Iterate over all items
-        foreach ((var id, var item) in items)
+        foreach (var (id, item) in items)
         {
             // Make sure the item has properties
             var itemProperties = item.Properties;
@@ -161,25 +196,21 @@ public class DatabaseModifier(DatabaseService databaseService, ItemHelper itemHe
             if (itemHelper.IsOfBaseclass(id, BaseClasses.IRON_SIGHT))
             {
                 itemProperties.Ergonomics = 1;
-            }
-
-            // We need conflicts to remove
-            var conflicts = itemProperties.ConflictingItems;
-            if (conflicts == null || conflicts.Count == 0)
-            {
                 continue;
             }
 
             // Remove conflicting ear pieces from all cosmetic headwear
-            if (itemHelper.IsOfBaseclass(id, BaseClasses.HEADWEAR) && !itemHelper.ItemHasSlots(id))
+            if (itemHelper.IsOfBaseclass(id, BaseClasses.HEADWEAR) && !ItemHasSlots(id))
             {
-                conflicts.RemoveWhere(conflictingItem => itemHelper.IsOfBaseclass(conflictingItem, BaseClasses.HEADPHONES));
+                itemProperties.ConflictingItems?.RemoveWhere(conflictingItem => ShouldRemoveConflict(conflictingItem, BaseClasses.HEADPHONES, false));
+                continue;
             }
 
             // Remove conflicting cosmetic headwear from all ear pieces
             if (itemHelper.IsOfBaseclass(id, BaseClasses.HEADPHONES))
             {
-                conflicts.RemoveWhere(conflictingItem => itemHelper.IsOfBaseclass(conflictingItem, BaseClasses.HEADWEAR) && !itemHelper.ItemHasSlots(conflictingItem));
+                itemProperties.ConflictingItems?.RemoveWhere(conflictingItem => ShouldRemoveConflict(conflictingItem, BaseClasses.HEADWEAR, true));
+                continue;
             }
         }
     }
@@ -189,7 +220,7 @@ public class DatabaseModifier(DatabaseService databaseService, ItemHelper itemHe
         var templates = databaseService.GetTemplates();
 
         // Iterate over all quests
-        foreach ((_, var quest) in templates.Quests)
+        foreach (var (_, quest) in templates.Quests)
         {
             // Iterate over the quest's conditions
             foreach (var condition in quest.Conditions.AvailableForStart ?? [])
